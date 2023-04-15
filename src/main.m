@@ -17,6 +17,3 @@
 
 % Move the robot
 
-
-
-
