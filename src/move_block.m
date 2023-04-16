@@ -16,8 +16,10 @@ function res = move_block(block, img, projMatrix, camParams)
     
 
 %   coord_set = [robpos;block;target]
+    display(block(1));
     cube_clr = block(1);
-    coord_set=find_obj(img,cube_clr);
+    coord_set=find_objects(img,cube_clr);
+    display(coord_set);
 
     %coord_set =[40 20 100; 
     %            30 60 80];
@@ -25,17 +27,18 @@ function res = move_block(block, img, projMatrix, camParams)
 
 
     %offset_angle = -21.66;
+    
+    %coord_set = (coord_set*camParams.R)+camParams.T;
 
-    bot = coord_set(:,1);
-    cyan = coord_set(:,2);
-    mag = coord_set(:,3);
-    cube = coord_set(:,4);
-    target = coord_set(:,5);
+    cyan = coord_set(:,1);
+    mag = coord_set(:,2);
+    cube = coord_set(:,3);
+    target = coord_set(:,4);
     %Get Ange of robot
     param_bot = val_calc(cyan,mag,0);
     offset_angle = param_bot(1);
     %Get Cube
-    param_cube = val_calc(cube,bot,offset_angle);
+    param_cube = val_calc(cube,cyan,offset_angle);
     %Calculate new position
     offset_angle = offset_angle + param_cube(1);
     param_target = val_calc(target,cube,offset_angle);

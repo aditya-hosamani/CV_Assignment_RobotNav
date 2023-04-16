@@ -3,7 +3,7 @@
 %img = imread("test_images/images/img1.png");
 %x = find_obj(img, "red");
 
-function coords = find_obj(img, cube_color)
+function coords = find_objects(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %

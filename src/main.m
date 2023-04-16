@@ -11,10 +11,13 @@
 % Find the projection matrix using the list of images (imgs).
 % squareSize (in mm) and boardSize (#corners) are optional, and can either
 % be detected automatically from the images or provided explicitly by user
-[projMatrix, camParams] = calibrate(imgs, squareSize, boardSize);
-img = imread("test_images\images\img1.png")
+
+%imgs = 
+%[projMatrix, camParams] = calibrate(imgs, squareSize, boardSize);
+
+img = imread("test_images\images\img1.png");
 blocks = {"green","blue","red"};
-[]=move_Block(blocks,img,projMatrix,camParams)
+x=move_block(blocks,img,0,0);
 
 % Object detection
 
