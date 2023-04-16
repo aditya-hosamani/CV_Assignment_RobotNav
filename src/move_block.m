@@ -14,20 +14,26 @@ function res = move_block(block, img, projMatrix, camParams)
 %        res: robot commands separated by ";". 
 %             An example output: "go(20); grab(); turn(90);  go(-10); let_go()"
     
+
 %   coord_set = [robpos;block;target]
     cube_clr = block(1);
     coord_set=find_obj(img,cube_clr);
 
     %coord_set =[40 20 100; 
     %            30 60 80];
+    
 
-    offset_angle = -21.66;
+
+    %offset_angle = -21.66;
 
     bot = coord_set(:,1);
-    
-    cube = coord_set(:,2);
-    target = coord_set(:,3);
-    
+    cyan = coord_set(:,2);
+    mag = coord_set(:,3);
+    cube = coord_set(:,4);
+    target = coord_set(:,5);
+    %Get Ange of robot
+    param_bot = val_calc(cyan,mag,0);
+    offset_angle = param_bot(1);
     %Get Cube
     param_cube = val_calc(cube,bot,offset_angle);
     %Calculate new position
