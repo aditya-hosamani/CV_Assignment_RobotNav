@@ -12,6 +12,9 @@
 % squareSize (in mm) and boardSize (#corners) are optional, and can either
 % be detected automatically from the images or provided explicitly by user
 [projMatrix, camParams] = calibrate(imgs, squareSize, boardSize);
+img = imread("test_images\images\img1.png")
+blocks = {"green","blue","red"};
+[]=move_Block(blocks,img,projMatrix,camParams)
 
 % Object detection
 
