@@ -2,8 +2,9 @@ function res = move_block(block, img, projMatrix, camParams)
 % MOVE_BLOCK Returns the commands to move the specified blocks to their target position.
 %
 %    Inputs:
-%        blocks: a cell array of string values that determine which blocks you should move 
-%                and in which order. For example, if blocks = {"red", "green", "blue"} 
+%        blocks: a list of string values that determine which blocks you should move 
+%                and in which order. For example, if blocks = ["red",
+%                "green", "blue"]
 %                that means that you need to first move red block. 
 %                Your function should at minimum work for the following values of blocks:
 %                blocks = {"red"}, blocks = {"green"}, blocks = {"blue"}.
@@ -16,19 +17,16 @@ function res = move_block(block, img, projMatrix, camParams)
     
 
 %   coord_set = [robpos;block;target]
-    display(block(1));
     cube_clr = block(1);
     coord_set=find_objects(img,cube_clr);
-    display(coord_set);
 
     %coord_set =[40 20 100; 
     %            30 60 80];
     
-
-
     %offset_angle = -21.66;
     
     %coord_set = (coord_set*camParams.R)+camParams.T;
+%     disp(coord_set)
 
     cyan = coord_set(:,1);
     mag = coord_set(:,2);

@@ -4,6 +4,9 @@
 %  Author: Aditya Hosamani (0585939)	        |
 % ===============================================
 
+
+close all; clear; clc;
+
 % Capture images
 % TBD
 
@@ -15,8 +18,9 @@
 %imgs = 
 %[projMatrix, camParams] = calibrate(imgs, squareSize, boardSize);
 
-img = imread("test_images\images\img1.png");
-blocks = {"green","blue","red"};
+% img = imread("test_images\images\img1.png");
+img = imread("../test_images/images/img1.png");
+blocks = ["green","blue","red"];
 x=move_block(blocks,img,0,0);
 
 % Object detection
