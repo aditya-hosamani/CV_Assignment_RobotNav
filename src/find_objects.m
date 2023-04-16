@@ -1,9 +1,9 @@
 %clear all; close all; clc;
 
-img = imread("test_images/images/img1.png");
-x = find_obj(img);
+%img = imread("test_images/images/img1.png");
+%x = find_obj(img, "red");
 
-function coords = find_obj(img)
+function coords = find_obj(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %
@@ -17,14 +17,28 @@ function coords = find_obj(img)
 %        top of the robot
 
     [cyan, magenta] = locate_robot(img);
+    coords = []
 
-    [rcube, rtarget] = locate_red(img);
-    [gcube, gtarget] = locate_green(img);
-    [bcube, btarget] = locate_blue(img);
+    if (cube_color == "red")
+        [rcube, rtarget] = locate_red(img);
+        coords = [transpose(cyan) transpose(magenta) transpose(rcube) transpose(rtarget)]
+        %coords(3) = transpose(rcube);
+        %coords(4) = transpose(rtarget);
+    elseif (cube_color == "green")
+        [gcube, gtarget] = locate_green(img);
+        coords = [transpose(cyan) transpose(magenta) transpose(gcube) transpose(gtarget)]
+        %coords(3) = transpose(gcube);
+        %coords(4) = transpose(gtarget);
+    elseif (cube_color == "blue")
+        [bcube, btarget] = locate_blue(img);
+        coords = [transpose(cyan) transpose(magenta) transpose(bcube) transpose(btarget)]
+        %coords(3) = transpose(bcube);
+        %coords(4) = transpose(btarget);
+    end
 
-    coords = [transpose(cyan) transpose(magenta) transpose(rcube) ...
-        transpose(gcube) transpose(bcube) transpose(rtarget) ...
-        transpose(gtarget) transpose(btarget)];
+    %coords = [transpose(cyan) transpose(magenta) transpose(rcube) ...
+    %    transpose(gcube) transpose(bcube) transpose(rtarget) ...
+    %    transpose(gtarget) transpose(btarget)];
 end
 
 function [rcube, rtarget] = locate_red(img)

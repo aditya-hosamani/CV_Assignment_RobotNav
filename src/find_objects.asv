@@ -1,11 +1,9 @@
-clear all;
-close all;
-clc;
+%clear all; close all; clc;
 
 img = imread("test_images/images/img1.png");
-x = find_obj(img);
+x = find_obj(img, "red");
 
-function coords = find_obj(img)
+function coords = find_obj(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %
@@ -19,14 +17,26 @@ function coords = find_obj(img)
 %        top of the robot
 
     [cyan, magenta] = locate_robot(img);
+    coords = []
 
-    [rcube, rtarget] = locate_red(img);
-    [gcube, gtarget] = locate_green(img);
-    [bcube, btarget] = locate_blue(img);
+    if (cube_color == "red")
+        [rcube, rtarget] = locate_red(img);
+        coords = [transpose(cyan) transpose(magenta) transpose(rcube) transpose(rtarget)]
+        %coords(3) = transpose(rcube);
+        %coords(4) = transpose(rtarget);
+    elseif (cube_color == "green")
+        [gcube, gtarget] = locate_green(img);
+        coords(3) = transpose(gcube);
+        coords(4) = transpose(gtarget);
+    elseif (cube_color == "blue")
+        [bcube, btarget] = locate_blue(img);
+        coords(3) = transpose(bcube);
+        coords(4) = transpose(btarget);
+    end
 
-    coords = [transpose(cyan) transpose(magenta) transpose(rcube) .. gcube bcube rtarget gtarget btarget];
-    display(cyan);
-    display(coords);
+    %coords = [transpose(cyan) transpose(magenta) transpose(rcube) ...
+    %    transpose(gcube) transpose(bcube) transpose(rtarget) ...
+    %    transpose(gtarget) transpose(btarget)];
 end
 
 function [rcube, rtarget] = locate_red(img)
@@ -88,45 +98,32 @@ function [cube_centroid, target_centroid] =locate_cube_and_target(img, rmin, rma
     cube_idx = find(min([props.MajorAxisLength] / [props.MinorAxisLength]));
     cube_centroid = props.Centroid(cube_idx, :);
 
-    figure;
-    imshow(colored_area);
-    hold on;
-    plot(target_centroid(1,1), target_centroid(1,2), "diamond", 'MarkerSize', 8, 'markerFaceColor', "red");
-    plot(cube_centroid(1,1), cube_centroid(1,2), "o", 'MarkerSize', 8, 'markerFaceColor', "red");
-    hold off;
+    % Plotting for testing, to be deleted later
+    %figure;
+    %imshow(colored_area);
+    %hold on;
+    %plot(target_centroid(1,1), target_centroid(1,2), "diamond", 'MarkerSize', 8, 'markerFaceColor', "red");
+    %plot(cube_centroid(1,1), cube_centroid(1,2), "o", 'MarkerSize', 8, 'markerFaceColor', "red");
+    %hold off;
 end
 
 function [cyan_centroid, magenta_centroid] = locate_robot(img)
     % Locate cyan in RGB color space
-    %rmin_c = 0;  
-    %rmax_c = 100;
-    %gmin_c = 50;
-    %gmax_c = 150;
-    %bmin_c = 100;
-    %bmax_c = 200;
-
     rmin_c = 0;  
-    rmax_c = 70;
-    gmin_c = 0;
-    gmax_c = 50;
-    bmin_c = 35;
-    bmax_c = 255;
+    rmax_c = 100;
+    gmin_c = 50;
+    gmax_c = 150;
+    bmin_c = 100;
+    bmax_c = 200;
 
     cyan_centroid = locate_dot(img, rmin_c, rmax_c, gmin_c, gmax_c, bmin_c, bmax_c);
 
     % Locate magenta
-    %rmin_m = 100;  
-    %rmax_m = 255;
-    %gmin_m = 0;
-    %gmax_m = 70;
-    %bmin_m = 100;
-    %bmax_m = 255;
-
-    rmin_m = 0;  
-    rmax_m = 70;
+    rmin_m = 100;  
+    rmax_m = 255;
     gmin_m = 0;
-    gmax_m = 50;
-    bmin_m = 35;
+    gmax_m = 70;
+    bmin_m = 100;
     bmax_m = 255;
 
     magenta_centroid = locate_dot(img, rmin_m, rmax_m, gmin_m, gmax_m, bmin_m, bmax_m);
@@ -156,12 +153,9 @@ function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)
     %    end
     %end
 
-    
-
-    figure;
-    imshow(colored_area);
-    hold on;
-
-    plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
-    hold off;
+    %figure;
+    %imshow(colored_area);
+    %hold on;
+    %plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
+    %hold off;
 end
