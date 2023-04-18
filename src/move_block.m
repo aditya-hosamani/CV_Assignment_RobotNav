@@ -1,4 +1,4 @@
-function res = move_block(block, img, projMatrix, camParams)
+function res = move_block(blocks, img, projMatrix, camParams)
 % MOVE_BLOCK Returns the commands to move the specified blocks to their target position.
 %
 %    Inputs:
@@ -17,7 +17,7 @@ function res = move_block(block, img, projMatrix, camParams)
     
 
 %   coord_set = [robpos;block;target]
-    cube_clr = block(1);
+    cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
 
     %coord_set =[40 20 100; 
@@ -25,7 +25,7 @@ function res = move_block(block, img, projMatrix, camParams)
     
     %offset_angle = -21.66;
     
-    coord_set = (coord_set*camParams.R)+camParams.T;     
+    coord_set = (coord_set*(camParams.R))+camParams.T;     
     disp(coord_set)
     for i = 1:size(coord_set,2)
         coord_set(1,i) = coord_set(1,i)/coord_set(3,i);

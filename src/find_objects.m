@@ -19,13 +19,27 @@ function coords = find_objects(img, cube_color)
     [cyan, magenta] = locate_robot(img);
     coords = [];
 
+
+
     if (cube_color == "red")
         [rcube, rtarget] = locate_red(img);
+
+         disp("Cyan");disp(cyan);
+         disp("magenta");disp(magenta);
+         disp("rcube");disp(rcube);
+         disp("rtarget");disp(rtarget);
+
         coords = [transpose(cyan) transpose(magenta) transpose(rcube) transpose(rtarget)];
         %coords(3) = transpose(rcube);
         %coords(4) = transpose(rtarget);
     elseif (cube_color == "green")
         [gcube, gtarget] = locate_green(img);
+
+         disp("Cyan");disp(cyan);
+         disp("magenta");disp(magenta);
+         disp("rcube");disp(gcube);
+         disp("rtarget");disp(gtarget);
+
         coords = [transpose(cyan) transpose(magenta) transpose(gcube) transpose(gtarget)];
         %coords(3) = transpose(gcube);
         %coords(4) = transpose(gtarget);
@@ -36,10 +50,6 @@ function coords = find_objects(img, cube_color)
         %coords(4) = transpose(btarget);
     end
 
-%     disp("Cyan");disp(cyan);
-%     disp("magenta");disp(magenta);
-%     disp("rcube");disp(rcube);
-%     disp("rtarget");disp(rtarget);
 
     %coords = [transpose(cyan) transpose(magenta) transpose(rcube) ...
     %    transpose(gcube) transpose(bcube) transpose(rtarget) ...
@@ -100,10 +110,10 @@ function [cube_centroid, target_centroid] =locate_cube_and_target(img, rmin, rma
 
     max_val = max(props.Circularity);
     target_idx = find(props.Circularity == max_val);
-    target_centroid = props.Centroid(target_idx, :);
+    target_centroid = [props.Centroid(target_idx, :) 1];
 
     cube_idx = find(min([props.MajorAxisLength] / [props.MinorAxisLength]));
-    cube_centroid = props.Centroid(cube_idx, :);
+    cube_centroid = [props.Centroid(cube_idx, :) 1];
 
     % Plotting for testing, to be deleted later
     %figure;
@@ -124,6 +134,7 @@ function [cyan_centroid, magenta_centroid] = locate_robot(img)
     bmax_c = 200;
 
     cyan_centroid = locate_dot(img, rmin_c, rmax_c, gmin_c, gmax_c, bmin_c, bmax_c);
+    cyan_centroid = [cyan_centroid 1];
 
     % Locate magenta
     rmin_m = 100;  
