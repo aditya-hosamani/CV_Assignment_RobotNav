@@ -4,24 +4,25 @@
 %  Author: Aditya Hosamani (0585939)	        |
 % ===============================================
 
-
+% Close open windows, clear workspace and console
 close all; clear; clc;
 
-% Capture images
+% Capture images from the Kinect
 % TBD
 
 % Perform camera calibration
-% Find the projection matrix using the list of images (imgs).
-% squareSize (in mm) and boardSize (#corners) are optional, and can either
-% be detected automatically from the images or provided explicitly by user
-
-%imgs = 
-%[projMatrix, camParams] = calibrate(imgs, squareSize, boardSize);
+% Read calibration image
+calibImg = imread("..\test_images\calibration\img3.png");
+% Number of squares along rows and columns
+boardSize = [6,9];
+% Size of each square in mm
+squareSize = 45;
+[projMatrix, camParams] = calibrate(calibImg, squareSize, boardSize);
 
 % img = imread("test_images\images\img1.png");
-img = imread("test_images/images/img1.png");
-blocks = ["green","blue","red"];
-x=move_block(blocks,img,0,0);
+% img = imread("test_images/images/img1.png");
+% blocks = ["green","blue","red"];
+% x=move_block(blocks,img,0,0);
 
 % Object detection
 
