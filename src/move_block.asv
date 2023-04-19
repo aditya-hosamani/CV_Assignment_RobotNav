@@ -29,20 +29,21 @@ function res = move_block(blocks, img, projMatrix, camParams)
     
     %offset_angle = -21.66;
     
-
-    %coord_set = (camParams.R*coord_set)+camParams.t;  
+    display(camParams.R)
+    display(camParams.t)
     %display(coord_set)
-    %disp(coord_set)
 
-    %Elementwise Operation just to make sure...
+    coord_set = camParams.R*coord_setcamParams.t;  
+    display(coord_set)
+    disp(coord_set)
+
+    
+
     for i = 1:size(coord_set,2)
-        coord_set(:,i) = (camParams.R*coord_set(:,i))+camParams.t;
         coord_set(1,i) = coord_set(1,i)/coord_set(3,i);
         coord_set(2,i) = coord_set(2,i)/coord_set(3,i);
         coord_set(3,i) = coord_set(3,i)/coord_set(3,i);
     end
-
-    display(coord_set)
 
     cyan = coord_set(:,1);
     mag = coord_set(:,2);
