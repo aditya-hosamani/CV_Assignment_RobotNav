@@ -1,7 +1,7 @@
-% clear all; close all; clc;
-% 
-% img = imread("../test_images/images/img1.png");
-% x = find_objects(img, "red");
+%clear all; close all; clc;
+ 
+%img = imread("test_images\new_robot_cover\img3.png");
+%x = find_obj(img, "red");
 
 function coords = find_objects(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
@@ -17,43 +17,15 @@ function coords = find_objects(img, cube_color)
 %        top of the robot
 
     [cyan, magenta] = locate_robot(img);
-    coords = [];
+
+    [rcube, rtarget] = locate_red(img);
+    [gcube, gtarget] = locate_green(img);
+    [bcube, btarget] = locate_blue(img);
 
 
-
-    if (cube_color == "red")
-        [rcube, rtarget] = locate_red(img);
-
-         disp("Cyan");disp(cyan);
-         disp("magenta");disp(magenta);
-         disp("rcube");disp(rcube);
-         disp("rtarget");disp(rtarget);
-
-        coords = [transpose(cyan) transpose(magenta) transpose(rcube) transpose(rtarget)];
-        %coords(3) = transpose(rcube);
-        %coords(4) = transpose(rtarget);
-    elseif (cube_color == "green")
-        [gcube, gtarget] = locate_green(img);
-
-         disp("Cyan");disp(cyan);
-         disp("magenta");disp(magenta);
-         disp("rcube");disp(gcube);
-         disp("rtarget");disp(gtarget);
-
-        coords = [transpose(cyan) transpose(magenta) transpose(gcube) transpose(gtarget)];
-        %coords(3) = transpose(gcube);
-        %coords(4) = transpose(gtarget);
-    elseif (cube_color == "blue")
-        [bcube, btarget] = locate_blue(img);
-        coords = [transpose(cyan) transpose(magenta) transpose(bcube) transpose(btarget)];
-        %coords(3) = transpose(bcube);
-        %coords(4) = transpose(btarget);
-    end
-
-
-    %coords = [transpose(cyan) transpose(magenta) transpose(rcube) ...
-    %    transpose(gcube) transpose(bcube) transpose(rtarget) ...
-    %    transpose(gtarget) transpose(btarget)];
+    coords = [transpose(cyan) transpose(magenta) ...
+        transpose(rcube) transpose(gcube) transpose(bcube) ...
+        transpose(rtarget) transpose(gtarget) transpose(btarget)];
 end
 
 function [rcube, rtarget] = locate_red(img)
@@ -131,21 +103,22 @@ function [cyan_centroid, magenta_centroid] = locate_robot(img)
     gmin_c = 50;
     gmax_c = 150;
     bmin_c = 100;
-    bmax_c = 200;
+    bmax_c = 255;
 
     cyan_centroid = locate_dot(img, rmin_c, rmax_c, gmin_c, gmax_c, bmin_c, bmax_c);
     cyan_centroid = [cyan_centroid 1];
 
     % Locate magenta
-    rmin_m = 100;  
+    rmin_m = 70;  
     rmax_m = 255;
     gmin_m = 0;
     gmax_m = 70;
-    bmin_m = 100;
+    bmin_m = 60;
     bmax_m = 255;
 
-    %magenta_centroid = locate_dot(img, rmin_m, rmax_m, gmin_m, gmax_m, bmin_m, bmax_m);
-    magenta_centroid = cyan_centroid;
+    magenta_centroid = locate_dot(img, rmin_m, rmax_m, gmin_m, gmax_m, bmin_m, bmax_m);
+    magenta_centroid = [magenta_centroid 1];
+    %magenta_centroid = cyan_centroid;
 end
 
 function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)

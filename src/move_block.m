@@ -16,6 +16,10 @@ function res = move_block(blocks, img, projMatrix, camParams)
 %             An example output: "go(20); grab(); turn(90);  go(-10); let_go()"
     
 
+    %coords = [transpose(cyan) transpose(magenta) ...
+    % transpose(rcube) transpose(gcube) transpose(bcube) ...
+    % transpose(rtarget) transpose(gtarget) transpose(btarget)];
+
 %   coord_set = [robpos;block;target]
     cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
@@ -25,13 +29,20 @@ function res = move_block(blocks, img, projMatrix, camParams)
     
     %offset_angle = -21.66;
     
-    coord_set = (coord_set*(camParams.R))+camParams.T;     
-    disp(coord_set)
+
+    %coord_set = (camParams.R*coord_set)+camParams.t;  
+    %display(coord_set)
+    %disp(coord_set)
+
+    %Elementwise Operation just to make sure...
     for i = 1:size(coord_set,2)
+        coord_set(:,i) = (camParams.R*coord_set(:,i))+camParams.t;
         coord_set(1,i) = coord_set(1,i)/coord_set(3,i);
         coord_set(2,i) = coord_set(2,i)/coord_set(3,i);
         coord_set(3,i) = coord_set(3,i)/coord_set(3,i);
     end
+
+    display(coord_set)
 
     cyan = coord_set(:,1);
     mag = coord_set(:,2);
