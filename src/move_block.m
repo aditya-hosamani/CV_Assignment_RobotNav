@@ -35,10 +35,11 @@ function res = move_block(blocks, img, projMatrix, camParams)
     %disp(coord_set)
 
     %Elementwise Operation just to make sure...
+    display(projMatrix)
     for i = 1:size(coord_set,2)
-        coord_set(:,i) = (camParams.R*coord_set(:,i))+camParams.t;
-        coord_set(1,i) = coord_set(1,i)/coord_set(3,i);
-        coord_set(2,i) = coord_set(2,i)/coord_set(3,i);
+        coord_set(:,i) = ((camParams.R*coord_set(:,i))+camParams.t);
+        coord_set(1,i) = (coord_set(1,i)/coord_set(3,i))*(-1);
+        coord_set(2,i) = coord_set(2,i)/coord_set(3,i)*(-1);
         coord_set(3,i) = coord_set(3,i)/coord_set(3,i);
     end
 
@@ -46,8 +47,9 @@ function res = move_block(blocks, img, projMatrix, camParams)
 
     cyan = coord_set(:,1);
     mag = coord_set(:,2);
-    cube = coord_set(:,3);
-    target = coord_set(:,4);
+    cube = coord_set(:,5);
+    target = coord_set(:,8);
+
     %Get Ange of robot
     param_bot = val_calc(cyan,mag,0);
     offset_angle = param_bot(1);
@@ -60,8 +62,30 @@ function res = move_block(blocks, img, projMatrix, camParams)
     display(param_cube)
     display(param_target)
     
-    res=[];
-    %res = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2));let_go()];
+    %res=[];
+    %str1 = sprintf('turn(%g)', param_cube(1));
+    %str2 = sprintf('grab(%g)', param_cube(2));
+    str3 = sprintf('grab()', param_cube(1));
+    str4 = sprintf('turn(%g)', param_target(1));
+    str1 = sprintf('turn(%g)', param_target(2));
+    instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2));let_go()];
+    res = join(instructions, "; ")
+end
+
+function res = turn(degrees)
+    res = sprintf('turn(%g)', degrees);
+end
+
+function res = go(dist)
+    res = sprintf('go(%g)', dist);
+end
+
+function res = grab()
+    res = "grab()";
+end
+
+function res = let_go()
+    res = "let_go()";
 end
 
 function params = val_calc(cord_targ,cord_rob,offset_angle)

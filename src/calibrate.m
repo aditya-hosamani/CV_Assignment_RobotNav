@@ -21,6 +21,7 @@ function [projMat, camParams] = calibrate(img, squareSize, boardSize)
         boardSize = [6,9]; % number of corners in the chessboard pattern
     end
 
+    
     % smooth the image to reduce noise
     smoothImg = imgaussfilt(img, 0.3);
 

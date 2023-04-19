@@ -19,7 +19,7 @@ boardSize = [6,9];
 squareSize = 45;
 [projMatrix, camParams] = calibrate(calibImg, squareSize, boardSize);
 
-img = imread("test_images\new_robot_cover\img0.png");
+img = imread("test_images\new_robot_cover\imgx.png");
 % img = imread("test_images/images/img1.png");
 blocks = ["green","blue","red"];
 x=move_block(blocks,img,projMatrix,camParams);

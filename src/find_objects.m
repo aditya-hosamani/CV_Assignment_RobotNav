@@ -25,7 +25,7 @@ function coords = find_objects(img, cube_color)
 
     coords = [transpose(cyan) transpose(magenta) ...
         transpose(rcube) transpose(gcube) transpose(bcube) ...
-        transpose(rtarget) transpose(gtarget) transpose(btarget)];
+        transpose(rtarget) transpose(gtarget) transpose(btarget)]
 end
 
 function [rcube, rtarget] = locate_red(img)
