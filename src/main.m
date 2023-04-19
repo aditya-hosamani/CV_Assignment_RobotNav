@@ -17,7 +17,14 @@ calibImg = imread("test_images\calibration\img3.png");
 boardSize = [6,9];
 % Size of each square in mm
 squareSize = 45;
-[projMatrix, camParams] = calibrate(calibImg, squareSize, boardSize);
+% [projMatrix, camParams] = calibrate(calibImg, squareSize, boardSize);
+
+% Temporary calibration using MATLAB in-built
+calibPath = "..\test_images\calibration\calib";
+params = calibrateMatLocal(calibPath);
+
+
+%cameraParams = dltCalibration(calibImg, squareSize);
 
 img = imread("test_images\new_robot_cover\imgx.png");
 % img = imread("test_images/images/img1.png");
@@ -27,4 +34,31 @@ x=move_block(blocks,img,projMatrix,camParams);
 % Object detection
 
 % Move the robot
+
+
+%% Auxiliary functions
+function params = calibrateMatLocal(calibPath)
+    fileList = dir(calibPath);
+    % Filter the list to only include image files
+    imageFileNames = {};
+    for i = 1:length(fileList)
+        [~, fileName, ext] = fileparts(fileList(i).name);
+        if strcmpi(ext, '.png')
+            filePath = fullfile(calibPath, fileList(i).name);
+            imageFileNames{end+1,1} = char(imageDatastore(filePath).Files);
+        end
+    end
+    
+    % Detect calibration pattern.
+    [imagePoints, boardSize] = detectCheckerboardPoints(imageFileNames);
+    
+    % Generate world coordinates of the corners of the squares.
+    squareSize = 45; % millimeters
+    worldPoints = generateCheckerboardPoints(boardSize, squareSize);
+    
+    % Calibrate the camera.
+    imageSize = [1080, 1920];
+    [params, ~, estimationErrors] = estimateCameraParameters(imagePoints, worldPoints, ...
+                                         ImageSize=imageSize);
+end
 
