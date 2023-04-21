@@ -23,24 +23,13 @@ function res = move_block(blocks, img, projMatrix, camParams)
 %   coord_set = [robpos;block;target]
     cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
-
-    %coord_set =[40 20 100; 
-    %            30 60 80];
     
-    %offset_angle = -21.66;
-    
+    Z=25;
 
-    %coord_set = (camParams.R*coord_set)+camParams.t;  
-    %display(coord_set)
-    %disp(coord_set)
-
-    %Elementwise Operation just to make sure...
     display(projMatrix)
     for i = 1:size(coord_set,2)
-        coord_set(:,i) = ((camParams.R*coord_set(:,i))+camParams.t);
-        coord_set(1,i) = (coord_set(1,i)/coord_set(3,i))*(-1);
-        coord_set(2,i) = coord_set(2,i)/coord_set(3,i)*(-1);
-        coord_set(3,i) = coord_set(3,i)/coord_set(3,i);
+        coord_set(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
+   
     end
 
     display(coord_set)
@@ -85,7 +74,19 @@ function res = grab()
 end
 
 function res = let_go()
+
     res = "let_go()";
+end
+
+function V = trans_cord(point,M,Z)
+    A = double([M(:,1) M(:,2) -point (Z*M(:,3)+M(:,4))]);
+    [~,~,V]=svd(A);
+    V=V(:,end);
+    V(3) = Z;
+    for i =1:size(V,1)
+    V(i) = V(i)/V(4);
+    end
+    V(3) = Z;
 end
 
 function params = val_calc(cord_targ,cord_rob,offset_angle)
