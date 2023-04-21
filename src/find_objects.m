@@ -1,6 +1,6 @@
 %clear all; close all; clc;
  
-%img = imread("..\test_images\new_robot_cover\img5.png");
+%img = imread("../test_images/calib_test/img2.png");
 %x = find_obj(img, "green");
 
 function coords = find_objects(img, cube_color)

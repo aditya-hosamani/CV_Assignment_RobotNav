@@ -16,11 +16,6 @@ function res = move_block(blocks, img, projMatrix)
 %             An example output: "go(20); grab(); turn(90);  go(-10); let_go()"
     
 
-    %coords = [transpose(cyan) transpose(magenta) ...
-    % transpose(rcube) transpose(gcube) transpose(bcube) ...
-    % transpose(rtarget) transpose(gtarget) transpose(btarget)];
-
-%   coord_set = [robpos;block;target]
     cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
     coord_set_2d = zeros(4,size(coord_set,2));
@@ -29,19 +24,30 @@ function res = move_block(blocks, img, projMatrix)
     display(projMatrix)
     for i = 1:size(coord_set,2)
         coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
-        %coord_set(:,i) = ()
     end
 
     display(coord_set)
-
+    
     cyan = coord_set(:,1);
     mag = coord_set(:,2);
-    cube = coord_set(:,3);
-    target = coord_set(:,6);
+    cube = coord_set(:,4);
+    target =coord_set(:,7);
+    disp("Stage 1")
+    if contains(cyan,cube,coord_set(:,3)) == true || contains(cyan,cube,coord_set(:,5))==true
+        disp("Obstacle detected")
+    
+    else
+        disp("No Obstacle detected")
+    end
+    disp("Stage 2")
+    if contains(cube,target,coord_set(:,3)) == true || contains(cube,target,coord_set(:,5))==true
+        disp("Obstacle detected")
+    
+    else
+        disp("No Obstacle detected")
+    end
 
-
-
-    %Get Ange of robot
+    %Get Angle of robot
     param_bot = val_calc(cyan,mag,0);
     offset_angle = param_bot(1);
     display(offset_angle)
@@ -50,13 +56,20 @@ function res = move_block(blocks, img, projMatrix)
     %Calculate new position
     offset_angle = offset_angle + param_cube(1);
     param_target = val_calc(target,cube,offset_angle);
-    
-    display(param_cube)
-    display(param_target)
+
     
     instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2));let_go()];
-    res = join(instructions, "; ")
+    res = join(instructions, "; ");
 end
+
+function cont = contains(p_ro,p_targ,p_dist)
+    if abs(p_ro(1)-p_dist(1)) < abs(p_ro(1)-p_targ(1)) && abs(p_ro(2)-p_dist(2)) < abs(p_ro(2)-p_targ(2))
+        cont = true;
+    else
+        cont = false;
+    end
+end
+
 
 function res = turn(degrees)
     res = sprintf('turn(%g)', degrees);
@@ -132,3 +145,4 @@ function params = val_calc(cord_targ,cord_rob,offset_angle)
     
 
 end
+
