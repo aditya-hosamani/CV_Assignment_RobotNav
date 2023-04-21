@@ -23,13 +23,13 @@ function res = move_block(blocks, img, projMatrix, camParams)
 %   coord_set = [robpos;block;target]
     cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
-    
+    coord_set_2d = zeros(4,size(coord_set,2));
     Z=25;
 
     display(projMatrix)
     for i = 1:size(coord_set,2)
-        %coord_set(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
-        coord_set(:,i) = ()
+        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
+        %coord_set(:,i) = ()
     end
 
     display(coord_set)
@@ -42,6 +42,7 @@ function res = move_block(blocks, img, projMatrix, camParams)
     %Get Ange of robot
     param_bot = val_calc(cyan,mag,0);
     offset_angle = param_bot(1);
+    display(offset_angle)
     %Get Cube
     param_cube = val_calc(cube,cyan,offset_angle);
     %Calculate new position
@@ -94,27 +95,34 @@ function params = val_calc(cord_targ,cord_rob,offset_angle)
     if dist_x == 0
         angle = 0;
     %Quad I
-    elseif dist_x <= 0 && dist_y <= 0
+    elseif dist_x <= 0 && dist_y >= 0
         fprintf("Quad I")
         dist_x = dist_x*(-1);
-        dist_y = dist_y*(-1);
-        angle = 90-atand(dist_y/dist_x);
-    
+        %dist_y = dist_y*(-1);
+        %angle = 90-atand(dist_x/dist_y);
+        angle = atand(dist_x/dist_y);
+
     %Quad II
-    elseif dist_x >= 0 && dist_y <= 0
-        fprintf("Quad II")
-        dist_y = dist_y*(-1);
-        angle = (90-atand(dist_y/dist_x))*(-1);
-    %Quad III
     elseif dist_x >= 0 && dist_y >= 0
+        fprintf("Quad II")
+        %dist_y = dist_y*(-1);
+        %angle = (90-atand(dist_y/dist_x))*(-1);
+        angle = -atand(dist_x/dist_y);
+
+    %Quad III
+    elseif dist_x >= 0 && dist_y <= 0
         fprintf("Quad III")
-        angle = -90- atand(dist_y/dist_x);
+        dist_y = dist_y*(-1);
+        %angle = -90- atand(dist_y/dist_x);
+        angle = (180-atand(dist_x/dist_y))*(-1);
+
     %Quad IV
-    elseif dist_x <= 0 && dist_y >= 0
+    elseif dist_x <= 0 && dist_y <= 0
         fprintf("Quad IV")
+        dist_y = dist_y*(-1);
         dist_x = dist_x*(-1);
-        angle = 90+atand(dist_y/dist_x)
-   
+        %angle = 90+atand(dist_y/dist_x)
+        angle = 180-atand(dist_x/dist_y);
     end
     angle = angle - offset_angle;
     dist = sqrt(dist_x^2+dist_y^2);
