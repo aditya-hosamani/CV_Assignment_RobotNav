@@ -61,9 +61,10 @@ function [params, P] = calibrateMatLocal(calibPath)
     imageSize = [1080, 1920];
     [params, ~, estimationErrors] = estimateCameraParameters(imagePoints, worldPoints, ...
                                          ImageSize=imageSize);
-
-    intrinsic = params.Intrinsics;
-    extrinsic = estimateExtrinsics(imagePoints, worldPoints, intrinsic);
-    P = cameraProjection(intrinsic, extrinsic);
+    display(imagePoints)
+    %intrinsic = params.Intrinsics;
+    %extrinsic = estimateExtrinsics(imagePoints, worldPoints, intrinsic);
+    [camProjection,~]=estimateCameraProjection(imagePoints,worldPoints)
+    P = camProjection
 end
 

@@ -28,8 +28,8 @@ function res = move_block(blocks, img, projMatrix, camParams)
 
     display(projMatrix)
     for i = 1:size(coord_set,2)
-        coord_set(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
-   
+        %coord_set(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
+        coord_set(:,i) = ()
     end
 
     display(coord_set)
