@@ -1,4 +1,4 @@
-function res = move_block(blocks, img, projMatrix, camParams)
+function res = move_block(blocks, img, projMatrix)
 % MOVE_BLOCK Returns the commands to move the specified blocks to their target position.
 %
 %    Inputs:
@@ -36,8 +36,10 @@ function res = move_block(blocks, img, projMatrix, camParams)
 
     cyan = coord_set(:,1);
     mag = coord_set(:,2);
-    cube = coord_set(:,5);
-    target = coord_set(:,8);
+    cube = coord_set(:,3);
+    target = coord_set(:,6);
+
+
 
     %Get Ange of robot
     param_bot = val_calc(cyan,mag,0);
@@ -61,7 +63,7 @@ function res = turn(degrees)
 end
 
 function res = go(dist)
-    res = sprintf('go(%g)', dist);
+    res = sprintf('go(%g)', (dist-30)/10);
 end
 
 function res = grab()
