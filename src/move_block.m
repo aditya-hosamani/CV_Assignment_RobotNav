@@ -51,12 +51,6 @@ function res = move_block(blocks, img, projMatrix, camParams)
     display(param_cube)
     display(param_target)
     
-    %res=[];
-    %str1 = sprintf('turn(%g)', param_cube(1));
-    %str2 = sprintf('grab(%g)', param_cube(2));
-    str3 = sprintf('grab()', param_cube(1));
-    str4 = sprintf('turn(%g)', param_target(1));
-    str1 = sprintf('turn(%g)', param_target(2));
     instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2));let_go()];
     res = join(instructions, "; ")
 end

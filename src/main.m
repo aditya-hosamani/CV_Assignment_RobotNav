@@ -20,8 +20,9 @@ squareSize = 45;
 % [projMatrix, camParams] = calibrate(calibImg, squareSize, boardSize);
 
 % Temporary calibration using MATLAB in-built
-calibPath = "..\test_images\calibration\calib";
-params = calibrateMatLocal(calibPath);
+calibPath = "test_images\calibration";
+[camParams, projMatrix]= calibrateMatLocal(calibPath);
+
 
 
 %cameraParams = dltCalibration(calibImg, squareSize);
@@ -37,7 +38,7 @@ x=move_block(blocks,img,projMatrix,camParams);
 
 
 %% Auxiliary functions
-function params = calibrateMatLocal(calibPath)
+function [params, P] = calibrateMatLocal(calibPath)
     fileList = dir(calibPath);
     % Filter the list to only include image files
     imageFileNames = {};
@@ -60,5 +61,9 @@ function params = calibrateMatLocal(calibPath)
     imageSize = [1080, 1920];
     [params, ~, estimationErrors] = estimateCameraParameters(imagePoints, worldPoints, ...
                                          ImageSize=imageSize);
+
+    intrinsic = params.Intrinsics;
+    extrinsic = estimateExtrinsics(imagePoints, worldPoints, intrinsic);
+    P = cameraProjection(intrinsic, extrinsic);
 end
 
