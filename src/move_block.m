@@ -57,26 +57,23 @@ function res = move_block(blocks, img, projMatrix)
     offset_angle = offset_angle + param_cube(1);
     param_target = val_calc(target,cube,offset_angle);
 
+    instructions = [];
+    instructions = [instructions,turn(param_cube(1)),go(param_cube(2)),grab()];,turn(param_target(1)),go(param_target(2)),let_go()]; 
     
-    instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2));let_go()];
+    %instructions = [];
+    
     res = join(instructions, "; ");
 end
 
 function cont = contains(p_ro,p_targ,p_dist)
-    disp(p_ro)
-    disp(p_targ)
-    disp(p_dist)
-
+    %Disturbance disp("disturbance")
+    dist_x=abs(p_ro(1)-p_dist(1));
+    dist_y=abs(p_ro(2)-p_dist(2));
+    %Referenceframe disp("Reference")
+    ref_x = abs(p_ro(1)-p_targ(1));
+    ref_y =abs(p_ro(2)-p_targ(2));
     
 
-    disp("disturbance")
-    dist_x=abs(p_ro(1)-p_dist(1))
-    dist_y=abs(p_ro(2)-p_dist(2))
-    disp("Reference")
-
-    ref_x = abs(p_ro(1)-p_targ(1))
-    ref_y =abs(p_ro(2)-p_targ(2))
-    
     if dist_x < ref_x && dist_y < ref_y && sign(p_ro(1)-p_dist(1)) == sign(p_ro(1)-p_targ(1)) && sign(p_ro(2)-p_dist(2)) == sign(p_ro(2)-p_targ(2)) 
         cont = true;
     else

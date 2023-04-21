@@ -21,7 +21,7 @@ projMatrix = [0.0432    0.9514   -1.2587  574.0921;
 img = imread("..\test_images\calib_test\img2.png");
 % % img = imread("test_images/images/img1.png");
 blocks = ["green","blue","red"];
-x=move_block(blocks,img,projMatrix);
+x=move_block(blocks,img,projMatrix)
 
 % Object detection
 
