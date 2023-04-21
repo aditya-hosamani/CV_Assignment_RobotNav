@@ -32,35 +32,59 @@ function res = move_block(blocks, img, projMatrix)
     mag = coord_set(:,2);
     cube = coord_set(:,4);
     target =coord_set(:,7);
-    disp("Stage 1")
-    if contains(cyan,cube,coord_set(:,3)) == true %|| %contains(cyan,cube,coord_set(:,5))==true
-        disp("Obstacle detected")
     
-    else
-        disp("No Obstacle detected")
-    end
-    disp("Stage 2")
-    if contains(cube,target,coord_set(:,3)) == true %|| contains(cube,target,coord_set(:,5))==true
-        disp("Obstacle detected")
-    
-    else
-        disp("No Obstacle detected")
-    end
+
+    instructions = [];
 
     %Get Angle of robot
     param_bot = val_calc(cyan,mag,0);
-    offset_angle = param_bot(1);
+    offset_angle = param_bot(1)
     display(offset_angle)
-    %Get Cube
-    param_cube = val_calc(cube,cyan,offset_angle);
-    %Calculate new position
-    offset_angle = offset_angle + param_cube(1);
-    param_target = val_calc(target,cube,offset_angle);
-
-    instructions = [];
-    instructions = [instructions,turn(param_cube(1)),go(param_cube(2)),grab()];,turn(param_target(1)),go(param_target(2)),let_go()]; 
     
-    %instructions = [];
+    %Object detection stage 1
+    disp("Stage 1")
+    if contains(cyan,cube,coord_set(:,3)) == true %|| %contains(cyan,cube,coord_set(:,5))==true
+        disp("Obstacle detected")
+        avd = avoid(cyan);
+        avd_param = val_calc(avd,cyan,offset_angle);
+        instructions = [instructions,"Avoid",turn(avd_param(1)),go(avd_param(2)),"Avoid End"];
+        offset_angle=offset_angle+avd_param(1)
+        param_cube = val_calc(cube,avd_param,offset_angle);
+    else
+        disp("No Obstacle detected")
+        param_cube = val_calc(cube,cyan,offset_angle);
+    end
+
+
+    %Get Cube
+    %param_cube = val_calc(cube,cyan,offset_angle);
+
+    %Adjust offset angle
+    offset_angle = offset_angle + param_cube(1)
+    
+    %Parsing instructions
+    instructions = [instructions,turn(param_cube(1)),go(param_cube(2)),grab()];
+    
+
+    %Object detection stage 1
+    disp("Stage 2")
+    if contains(cube,target,coord_set(:,3)) == true %|| contains(cube,target,coord_set(:,5))==true
+        disp("Obstacle detected")
+       
+        avd = avoid(cube);
+        avd_param = val_calc(avd,cube,offset_angle);
+        instructions = [instructions,turn(avd_param(1)),go(avd_param(2))];
+        disp("Stage 2 Offset")
+        offset_angle=offset_angle+avd_param(1)
+        param_target = val_calc(target,avd_param,offset_angle);
+    
+    else
+        disp("No Obstacle detected")
+        param_target = val_calc(target,cube,offset_angle);
+    end
+    
+    %Parsing instructions
+    instructions = [instructions,turn(param_target(1)),go(param_target(2)),let_go()];
     
     res = join(instructions, "; ");
 end
@@ -111,6 +135,7 @@ function V = trans_cord(point,M,Z)
 end
 
 function params = val_calc(cord_targ,cord_rob,offset_angle)
+
     
     dist_x = cord_rob(1)-cord_targ(1);
     dist_y = cord_rob(2)-cord_targ(2);
@@ -157,3 +182,8 @@ function params = val_calc(cord_targ,cord_rob,offset_angle)
 
 end
 
+function avd = avoid(bot)
+    avd = bot;
+    avd(1) = avd(1)+250;
+    avd(2) = avd(2)+250;
+end
