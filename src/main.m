@@ -11,19 +11,9 @@ close all; clear; clc;
 % TBD
 
 % Perform camera calibration
-% Read calibration image
-calibImg = imread("test_images\calibration\img3.png");
-% Number of squares along rows and columns
-boardSize = [6,9];
-% Size of each square in mm
-squareSize = 45;
-% [projMatrix, camParams] = calibrate(calibImg, squareSize, boardSize);
-
 % Temporary calibration using MATLAB in-built
-calibPath = "test_images\calibration";
+calibPath = "..\test_images\calibration";
 [camParams, projMatrix]= calibrateMatLocal(calibPath);
-
-
 
 %cameraParams = dltCalibration(calibImg, squareSize);
 
@@ -59,11 +49,14 @@ function [params, P] = calibrateMatLocal(calibPath)
     
     % Calibrate the camera.
     imageSize = [1080, 1920];
-    [params, ~, estimationErrors] = estimateCameraParameters(imagePoints, worldPoints, ...
+    [params, ~, ~] = estimateCameraParameters(imagePoints, worldPoints, ...
                                          ImageSize=imageSize);
 
     intrinsic = params.Intrinsics;
-    extrinsic = estimateExtrinsics(imagePoints, worldPoints, intrinsic);
+    disp(size(imagePoints));
+    meanImgPoints = mean(imagePoints,3);
+
+    extrinsic = estimateExtrinsics(meanImgPoints, worldPoints, intrinsic);
     P = cameraProjection(intrinsic, extrinsic);
 end
 
