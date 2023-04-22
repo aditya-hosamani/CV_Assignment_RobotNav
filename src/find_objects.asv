@@ -1,9 +1,9 @@
-%clear all; close all; clc;
+clear all; close all; clc;
  
-%img = imread("..\test_images\calib_test\img1.png");
-%x = find_obj(img, "green");
+img = imread("..\test_images\images\img1.png");
+x = find_obj(img, "green");
 
-function coords = find_object(img, cube_color)
+function coords = find_obj(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %
@@ -16,12 +16,12 @@ function coords = find_object(img, cube_color)
 %        centroids and the centroids of the cyan and magenta dots on
 %        top of the robot
 
-    [cyan, magenta] = locate_robot(img);
-    %robot = locate_robot_arrow(img);
+    %[cyan, magenta] = locate_robot(img);
+    robot = locate_robot_arrow(img);
 
-    [rcube, rtarget] = locate_red(img);
-    [gcube, gtarget] = locate_green_hsv(img);
-    [bcube, btarget] = locate_blue_hsv(img);
+    %[rcube, rtarget] = locate_red(img);
+    %[gcube, gtarget] = locate_green_hsv(img);
+    %[bcube, btarget] = locate_blue_hsv(img);
 
     coords = [transpose(cyan) transpose(magenta) ...
         transpose(rcube) transpose(gcube) transpose(bcube) ...
@@ -83,7 +83,7 @@ function [bcube, btarget] = locate_blue_hsv(img)
     % Locate blue in HSV color space
     img = rgb2hsv(img);
 
-    hmin = 0.445;  
+    hmin = 0.563;  
     hmax = 0.729;
     smin = 0.100;
     smax = 0.900;
@@ -196,16 +196,82 @@ function robot = locate_robot_arrow(img)
     %dot_idx = find(props.Circularity == max_val);
     %dot_centroid = props.Centroid(dot_idx, :);
 
+    arrow = [];
     figure;
     imshow(colored_area);
     hold on;
     for i = 1:size(props)
         if (props.Circularity(i, :) > 0.8)
             dot_centroid = props.Centroid(i, :);
-            plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
+            %plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
+            arrow = [arrow,transpose(dot_centroid)];
         end
     end
+    display(arrow)
+    arrow = filter_arrow(arrow);
+    for i = 1:8
+        plot(arrow(1, i), arrow(2, i), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
+    end
+
     hold off;
 
     robot = 1;  % Change this to sth meaningful
+end
+
+function arrow = filter_arrow(field)
+    res_arr = [];
+    for i = 1:size(field,2)
+        dist_ar = [];
+        for j = 1:size(field,2)
+            dist_x = abs(field(1,i)-field(1,j));
+            dist_y = abs(field(2,i)-field(2,j));
+            dist = sqrt(dist_x^2+dist_y^2);
+            dist_ar = [dist_ar,dist]
+        end
+        res_arr = [res_arr,mean(dist_ar)];
+    end
+    while size(field,2) > 8
+        [~,i] = max(res_arr);
+        res_arr(i) = [];
+        field(:,i) = [];
+    end
+    dir=get_dir(field);
+    arrow=field;
+end
+
+function dir = get_dir(arrow)
+    box = [];
+    [max_x,max_ix] = max(arrow(1,:))
+    [min_x,min_ix] = min(arrow(1,:))
+    [max_y,max_iy] = max(arrow(2,:))
+    [min_y,min_iy] = min(arrow(2,:))
+
+    box_mid = [min_x+(max_x - min_x)/2; min_y+(max_y-min_y)/2];
+    display(arrow)
+    display(mean(arrow(1)))
+    anchor = [mean(arrow(1,:));mean(arrow(2,:))];
+
+    dir=0;
+    plot(max_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(min_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(max_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(min_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(box_mid(1), box_mid(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(anchor(1), anchor(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "green");
+    
+   % vecs = zeros(9, 9, 2);
+    arrow = [arrow,anchor];
+    vecs = [];
+    for i = 1:size(arrow,2)
+        temp=[];
+        for j = 1:size(arrow,2)
+            lv = arrow(:,i) - arrow(:,j);
+            temp = [temp,lv]
+        end
+        vecs[]
+    end
+
+    disp(vecs)
+    
+
 end
