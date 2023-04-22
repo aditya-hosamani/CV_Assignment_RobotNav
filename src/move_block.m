@@ -1,27 +1,8 @@
-function res = move_block(blocks, img, projMatrix)
+function res = move_block(cube_clr, img, projMatrix)
 % MOVE_BLOCK Returns the commands to move the specified blocks to their target position.
-%
-%    Inputs:
-%        blocks: a list of string values that determine which blocks you should move 
-%                and in which order. For example, if blocks = ["red",
-%                "green", "blue"]
-%                that means that you need to first move red block. 
-%                Your function should at minimum work for the following values of blocks:
-%                blocks = {"red"}, blocks = {"green"}, blocks = {"blue"}.
-%        img: an image containing the current arrangement of robot and blocks.
-%        calib: calibration results from function calibrate.
-%
-%    Output:
-%        res: robot commands separated by ";". 
-%             An example output: "go(20); grab(); turn(90);  go(-10); let_go()"
-    
-
-    cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
     coord_set_2d = zeros(4,size(coord_set,2));
     Z=25;
-
-    display(projMatrix)
     for i = 1:size(coord_set,2)
         coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
     end
@@ -30,34 +11,50 @@ function res = move_block(blocks, img, projMatrix)
     
     cyan = coord_set(:,1);
     mag = coord_set(:,2);
-    cube = coord_set(:,4);
-    target =coord_set(:,7);
-    
 
+    %Cube Selection
+    if cube_clr == "red"
+        disp("Red")
+        cube    = coord_set(:,3);
+        target  = coord_set(:,6);
+        obs1    = coord_set(:,4);
+        obs2    = coord_set(:,5);
+    
+    elseif cube_clr == "green"
+        disp("Green")
+        cube    = coord_set(:,4);
+        target  = coord_set(:,7);
+        obs1    = coord_set(:,3);
+        obs2    = coord_set(:,5);
+
+    elseif cube_clr == "blue"
+        disp("Blue")
+        cube    = coord_set(:,5);
+        target  = coord_set(:,8);
+        obs1    = coord_set(:,3);
+        obs2    = coord_set(:,4);
+    end
+    
     instructions = [];
 
     %Get Angle of robot
     param_bot = val_calc(cyan,mag,0);
-    offset_angle = param_bot(1)
-    display(offset_angle)
+    offset_angle = param_bot(1);
+
     
     %Object detection stage 1
     disp("Stage 1")
-    if contains(cyan,cube,coord_set(:,3)) == true %|| %contains(cyan,cube,coord_set(:,5))==true
+    if contains(cyan,cube,obs1) == true || contains(cyan,cube,obs2) == true
         disp("Obstacle detected")
-        avd = avoid(cyan);
+        avd = avoid(cyan,obs1,obs2)
         avd_param = val_calc(avd,cyan,offset_angle);
         instructions = [instructions,"Avoid",turn(avd_param(1)),go(avd_param(2)),"Avoid End"];
-        offset_angle=offset_angle+avd_param(1)
-        param_cube = val_calc(cube,avd_param,offset_angle);
+        offset_angle=offset_angle+avd_param(1);
+        param_cube = val_calc(cube,avd,offset_angle);
     else
         disp("No Obstacle detected")
         param_cube = val_calc(cube,cyan,offset_angle);
     end
-
-
-    %Get Cube
-    %param_cube = val_calc(cube,cyan,offset_angle);
 
     %Adjust offset angle
     offset_angle = offset_angle + param_cube(1)
@@ -68,15 +65,14 @@ function res = move_block(blocks, img, projMatrix)
 
     %Object detection stage 1
     disp("Stage 2")
-    if contains(cube,target,coord_set(:,3)) == true %|| contains(cube,target,coord_set(:,5))==true
-        disp("Obstacle detected")
-       
-        avd = avoid(cube);
+    if contains(cube,target,obs1) == true || contains(cube,target,obs2)==true
+        disp("Obstacle detected")      
+        avd = avoid(cube,obs1,obs2)
         avd_param = val_calc(avd,cube,offset_angle);
         instructions = [instructions,turn(avd_param(1)),go(avd_param(2))];
         disp("Stage 2 Offset")
-        offset_angle=offset_angle+avd_param(1)
-        param_target = val_calc(target,avd_param,offset_angle);
+        offset_angle=offset_angle+avd_param(1);
+        param_target = val_calc(target,avd,offset_angle);
     
     else
         disp("No Obstacle detected")
@@ -104,7 +100,6 @@ function cont = contains(p_ro,p_targ,p_dist)
         cont = false;
     end
 end
-
 
 function res = turn(degrees)
     res = sprintf('turn(%g)', degrees);
@@ -182,8 +177,11 @@ function params = val_calc(cord_targ,cord_rob,offset_angle)
 
 end
 
-function avd = avoid(bot)
+function avd = avoid(bot,obs1,obs2)
+    obs = [obs1 obs2];
+    mx = max(obs(1,:));
+    my = max(obs(2,:));
     avd = bot;
-    avd(1) = avd(1)+250;
-    avd(2) = avd(2)+250;
+    avd(1) = mx+120;
+    avd(2) = my+120;
 end

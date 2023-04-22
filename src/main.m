@@ -18,10 +18,10 @@ projMatrix = [0.0432    0.9514   -1.2587  574.0921;
     1.4682    0.7065   -0.6296  887.4907;
     0.0002   -0.0000   -0.0007    1.0000];
 
-img = imread("..\test_images\calib_test\img2.png");
+img = imread("..\test_images\new_robot_cover\img0.png");
 % % img = imread("test_images/images/img1.png");
 blocks = ["green","blue","red"];
-x=move_block(blocks,img,projMatrix)
+x=move_block(blocks(3),img,projMatrix)
 
 % Object detection
 
