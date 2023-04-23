@@ -30,8 +30,12 @@ function [projM] = calibrate(inputImg)
     f2 = figure;
     imshow(inputImg);
     hold on;
-    plot(points2d(2,:), points2d(1,:), 'r+', 'MarkerSize', 10);
-    plot(projPoints2d(2,:), projPoints2d(1,:), 'bo', 'MarkerSize', 10);
+    plot(points2d(1,:), points2d(2,:), 'r+', 'MarkerSize', 10);
+    plot(projPoints2d(1,:), projPoints2d(2,:), 'bo', 'MarkerSize', 10);
+
+    % Display the reprojection error
+    reprojError = norm(points2d-projPoints2d, 2);
+    fprintf("Reprojection Error: %f\n", reprojError);
     
 end
 
@@ -109,21 +113,31 @@ function imgPoints = get2dUserInput(inputImg)
     % Returns:
     %      imgPoints -  An array of 2xM image points
 
-    % Get user input
-    imgPoints = [];
-    nPoints = 8;
-    
     f1 = figure;
-    imshow(inputImg); hold on;
-    for ptIdx = 1:nPoints
-        coordinates_input = ginput(1);
-        row = round(coordinates_input(2));
-        column = round(coordinates_input(1));
-        fprintf('You clicked on pixel in row %d, column %d\n', ...
-           row, column);
-        imgPoints = [imgPoints; [row, column]];
-        %plot(row, column, 'g*', 'MarkerSize', 10);
+    B = imshow(inputImg);
+    imgPoints = [];
+    row = []; column = [];
+    while 0<1
+        [x,y,b] = ginput(1);
+        if isempty(b)
+            break;
+        elseif b==45        % ASCII code for '-' sign
+            ax = axis; width=ax(2)-ax(1); height=ax(4)-ax(3);
+            axis([x-width/2 x+width/2 y-height/2 y+height/2]);
+            zoom(1/2);
+        elseif b==43        % ASCII code for '+' sign
+            ax = axis; width=ax(2)-ax(1); height=ax(4)-ax(3);
+            axis([x-width/2 x+width/2 y-height/2 y+height/2]);
+            zoom(2);    
+        else
+            row=[row;round(x)];
+            column=[column;round(y)];
+        end
+        if(size(row,1) == 8)
+            break
+        end
     end
+    imgPoints = [row column];
     imgPoints = imgPoints';
     close(f1);
 
@@ -227,8 +241,8 @@ function [projPoints2d] = project3d_2d(points3d, projM)
 
     projPoints2d = zeros(2,size(points3d,2));
 
-    projPoints2d(1,:) = projected_points(1,:,:) ./ projected_points(3,:,:);
-    projPoints2d(2,:) = projected_points(2,:,:) ./ projected_points(3,:,:);
+    projPoints2d(1,:) = round(projected_points(1,:,:) ./ projected_points(3,:,:));
+    projPoints2d(2,:) = round(projected_points(2,:,:) ./ projected_points(3,:,:));
 
 end
 
