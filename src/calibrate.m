@@ -245,4 +245,3 @@ function [projPoints2d] = project3d_2d(points3d, projM)
     projPoints2d(2,:) = round(projected_points(2,:,:) ./ projected_points(3,:,:));
 
 end
-

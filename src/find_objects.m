@@ -1,9 +1,9 @@
-clear all; close all; clc;
+%clear all; close all; clc;
  
-img = imread("..\test_images\images\img1.png");
-x = find_obj(img, "green");
+%img = imread("..\test_images\images\img1.png");
+%x = find_obj(img, "green");
 
-function coords = find_obj(img, cube_color)
+function coords = find_objects(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %
@@ -16,16 +16,17 @@ function coords = find_obj(img, cube_color)
 %        centroids and the centroids of the cyan and magenta dots on
 %        top of the robot
 
-    %[cyan, magenta] = locate_robot(img);
-    robot = locate_robot_arrow(img);
+    [cyan, magenta] = locate_robot(img);
+    %robot = locate_robot_arrow(img);
 
-    %[rcube, rtarget] = locate_red(img);
-    %[gcube, gtarget] = locate_green_hsv(img);
-    %[bcube, btarget] = locate_blue_hsv(img);
+    [rcube, rtarget] = locate_red(img);
+    [gcube, gtarget] = locate_green_hsv(img);
+    [bcube, btarget] = locate_blue_hsv(img);
 
     coords = [transpose(cyan) transpose(magenta) ...
         transpose(rcube) transpose(gcube) transpose(bcube) ...
         transpose(rtarget) transpose(gtarget) transpose(btarget)]
+    %coords = 0;
 end
 
 function [rcube, rtarget] = locate_red(img)
@@ -121,8 +122,8 @@ function [cube_centroid, target_centroid] = locate_cube_and_target(img, rmin, rm
     figure;
     imshow(colored_area);
     hold on;
-    plot(target_centroid(1,1), target_centroid(1,2), "diamond", 'MarkerSize', 8, 'markerFaceColor', "red");
-    plot(cube_centroid(1,1), cube_centroid(1,2), "o", 'MarkerSize', 8, 'markerFaceColor', "red");
+    %plot(target_centroid(1,1), target_centroid(1,2), "diamond", 'MarkerSize', 8, 'markerFaceColor', "red");
+    %plot(cube_centroid(1,1), cube_centroid(1,2), "o", 'MarkerSize', 8, 'markerFaceColor', "red");
     hold off;
 end
 
@@ -189,14 +190,17 @@ function robot = locate_robot_arrow(img)
     colored_area = bwareaopen(filter, 10);
     colored_area = imfill(colored_area, "holes");
 
-    props = regionprops('table', colored_area, 'Centroid', 'Circularity', ...
-        'MajorAxisLength','MinorAxisLength', 'Area', 'Eccentricity');
+     labeled_img = bwlabel(colored_area);
+
+    props = regionprops('table', labeled_img, 'Centroid', 'Circularity', ...
+        'MajorAxisLength','MinorAxisLength', 'Area', 'BoundingBox');
 
     %max_val = max(props.Circularity);
     %dot_idx = find(props.Circularity == max_val);
     %dot_centroid = props.Centroid(dot_idx, :);
 
     arrow = [];
+    indices = [];
     figure;
     imshow(colored_area);
     hold on;
@@ -205,12 +209,13 @@ function robot = locate_robot_arrow(img)
             dot_centroid = props.Centroid(i, :);
             %plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
             arrow = [arrow,transpose(dot_centroid)];
+            indices = [indices, i];
         end
     end
     display(arrow)
-    arrow = filter_arrow(arrow);
+    arrow = filter_arrow(arrow, labeled_img, indices);
     for i = 1:8
-        plot(arrow(1, i), arrow(2, i), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
+        %plot(arrow(1, i), arrow(2, i), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
     end
 
     hold off;
@@ -218,7 +223,7 @@ function robot = locate_robot_arrow(img)
     robot = 1;  % Change this to sth meaningful
 end
 
-function arrow = filter_arrow(field)
+function arrow = filter_arrow(field, img, indices)
     res_arr = [];
     for i = 1:size(field,2)
         dist_ar = [];
@@ -234,12 +239,18 @@ function arrow = filter_arrow(field)
         [~,i] = max(res_arr);
         res_arr(i) = [];
         field(:,i) = [];
+        indices(i) = [];
     end
-    dir=get_dir(field);
+    display(field);
+
+    %labeled_img = bwlabel(img);
+    img = ismember(img, indices);     % Filter out noise from the bw image
+    dir=get_dir(field, img);
     arrow=field;
+
 end
 
-function dir = get_dir(arrow)
+function dir = get_dir(arrow, img)
     box = [];
     [max_x,max_ix] = max(arrow(1,:))
     [min_x,min_ix] = min(arrow(1,:))
@@ -252,12 +263,12 @@ function dir = get_dir(arrow)
     anchor = [mean(arrow(1,:));mean(arrow(2,:))];
 
     dir=0;
-    plot(max_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    plot(min_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    plot(max_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    plot(min_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    plot(box_mid(1), box_mid(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    plot(anchor(1), anchor(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "green");
+    %plot(max_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    %plot(min_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    %plot(max_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    %plot(min_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    %plot(box_mid(1), box_mid(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    %plot(anchor(1), anchor(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "green");
     
    % vecs = zeros(9, 9, 2);
     arrow = [arrow,anchor];
@@ -272,6 +283,70 @@ function dir = get_dir(arrow)
     end
     disp(vecs)
     
-    
+    se = strel("disk", 10);
+    closeimg = imclose(img, se);
+    figure;
+    %hold on;
+    imshow(closeimg);
+    %hold off;
+    hold on;
+    hold off;
 
+    props = regionprops('table', closeimg, 'Orientation', ...
+        'MajorAxisLength','MinorAxisLength', 'Area', 'Centroid');
+
+    angle = props.Orientation;
+    %if (angle < 0)
+    %    angle = 180 + angle;
+    %end
+    display(angle);
+
+    if ((angle > -45) && (angle < 0))
+        % Check if the arrow head is on the top or bottom
+        if (anchor(2) < box_mid(2))
+            % On top
+            angle
+            display("top")
+        else
+            % On bottom
+            angle = angle + 180
+            display("bottom")
+        end
+    elseif ((angle > 0) && (angle < 45))
+        % Check if the arrow head is on the top or bottom
+        if (anchor(2) < box_mid(2))
+            % On top
+            angle = angle - 180
+            display("top")
+        else
+            % On bottom
+            angle
+            display("bottom")
+        end
+
+    elseif ((angle > -90) && (angle < -45))
+        % Check if the arrow head is on the left or right
+        if (anchor(1) < box_mid(1))
+            % On left
+            angle
+            display("left")
+        else
+            % On right
+            angle = angle + 180
+            display("right")
+        end
+    elseif ((angle > 45) && (angle < 90))
+        % Check if the arrow head is on the left or right
+        if (anchor(1) < box_mid(1))
+            % On left
+            angle = angle - 180
+            display("left")
+        else
+            % On right
+            angle = angle + 180
+            display("right")
+        end   
+    end
+
+    %if (anchor < box_mid)
 end
