@@ -34,11 +34,10 @@ function res = move_block(blocks, img, projMatrix)
 
     display(coord_set)
 
-    cyan = coord_set(:,1);
-    mag = coord_set(:,2);
-    cube = coord_set(:,3);
-    target = coord_set(:,6);
-
+    cyan = coord_set_2d(:,1);
+    mag = coord_set_2d(:,2);
+    cube = coord_set_2d(:,3);
+    target = coord_set_2d(:,6);
 
 
     %Get Ange of robot
@@ -75,15 +74,17 @@ function res = let_go()
     res = "let_go()";
 end
 
-function V = trans_cord(point,M,Z)
+function point_xy = trans_cord(point,M,Z)
     A = double([M(:,1) M(:,2) -point (Z*M(:,3)+M(:,4))]);
     [~,~,V]=svd(A);
     V=V(:,end);
-    V(3) = Z;
+
     for i =1:size(V,1)
-    V(i) = V(i)/V(4);
+        V(i) = V(i)/V(4);
     end
     V(3) = Z;
+
+    point_xy = double([V(1)/V(4); V(2)/V(4)]);
 end
 
 function params = val_calc(cord_targ,cord_rob,offset_angle)
