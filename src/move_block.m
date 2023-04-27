@@ -24,11 +24,16 @@ function res = move_block(blocks, img, projMatrix)
     cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
     coord_set_2d = zeros(4,size(coord_set,2));
-    Z=25;
+    Z_robot = 75;
+    Z_cube=25;
 
     display(projMatrix)
-    for i = 1:size(coord_set,2)
-        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
+    for i = 1:2
+        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z_robot);
+    end
+    
+    for i = 3:size(coord_set,2)
+        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z_cube);
         %coord_set(:,i) = ()
     end
 
@@ -74,7 +79,7 @@ function res = let_go()
     res = "let_go()";
 end
 
-function point_xy = trans_cord(point,M,Z)
+function V = trans_cord(point,M,Z)
     A = double([M(:,1) M(:,2) -point (Z*M(:,3)+M(:,4))]);
     [~,~,V]=svd(A);
     V=V(:,end);
@@ -84,7 +89,7 @@ function point_xy = trans_cord(point,M,Z)
     end
     V(3) = Z;
 
-    point_xy = double([V(1)/V(4); V(2)/V(4)]);
+    %point_xy = double([V(1)/V(4); V(2)/V(4)]);
 end
 
 function params = val_calc(cord_targ,cord_rob,offset_angle)

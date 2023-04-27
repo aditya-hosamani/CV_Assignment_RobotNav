@@ -122,8 +122,8 @@ function [cube_centroid, target_centroid] = locate_cube_and_target(img, rmin, rm
     figure;
     imshow(colored_area);
     hold on;
-    %plot(target_centroid(1,1), target_centroid(1,2), "diamond", 'MarkerSize', 8, 'markerFaceColor', "red");
-    %plot(cube_centroid(1,1), cube_centroid(1,2), "o", 'MarkerSize', 8, 'markerFaceColor', "red");
+    plot(target_centroid(1,1), target_centroid(1,2), "diamond", 'MarkerSize', 8, 'markerFaceColor', "red");
+    plot(cube_centroid(1,1), cube_centroid(1,2), "o", 'MarkerSize', 8, 'markerFaceColor', "red");
     hold off;
 end
 
@@ -166,11 +166,11 @@ function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)
     dot_idx = find(props.Circularity == max_val);
     dot_centroid = props.Centroid(dot_idx, :);
 
-    %figure;
-    %imshow(colored_area);
-    %hold on;
-    %plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
-    %hold off;
+    figure;
+    imshow(colored_area);
+    hold on;
+    plot(dot_centroid(1,1), dot_centroid(1,2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
+    hold off;
 end
 
 function robot = locate_robot_arrow(img)
