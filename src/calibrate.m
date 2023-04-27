@@ -12,7 +12,11 @@ function [projM] = calibrate(inputImg)
     % Returns:
     %        projMat - The projection matrix of the camera
 
+    figHandle = showCornerTemplate();
+
     points2d = get2dUserInput(inputImg);
+    close(figHandle);   % close the template image once all 2D user points have been selected
+
     points3d = generateWorldPoints();
 
     %save points2dTest points2d;
@@ -25,7 +29,19 @@ function [projM] = calibrate(inputImg)
     
     projM = performDLT(points3d, points2d);
 
+    % Define the residual function
+    % Convert the given 3D point to its homogenous form
+    n = size(points3d, 2);
+    points3d = [points3d; ones(1, n)];
+    
+    residuals = @(P) reshape(pflat(P * points3d) - points2d, [], 1);
+
+    % Use lsqnonlin to optimize the projection matrix
+    options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt');
+    projM = lsqnonlin(residuals, projM, [], [], options);
+
     % Verify projection matrix by displaying the projected points
+    points3d = points3d(1:3,:);
     projPoints2d = project3d_2d(points3d, projM);
     f2 = figure;
     imshow(inputImg);
@@ -40,6 +56,27 @@ function [projM] = calibrate(inputImg)
 end
 
 
+function X_eucl = pflat(X_homog)
+% Convert homogeneous coordinates to Euclidean coordinates
+% by dividing the first n elements of each row by the last element
+n = size(X_homog, 1) - 1;
+X_eucl = X_homog(1:n, :) ./ X_homog(end, :);
+end
+
+
+function figHandle = showCornerTemplate()
+    %  SHOWCORNERTEMPLATE   :   Show template image to show the order of
+    %  selecting corners for 2D image points
+    %
+
+    templateImg = imread("..\test_images\calibration\cornerTemplate.png");
+    figHandle = figure();
+    imshow(templateImg);
+    title('Corner selection template')
+
+end
+
+
 function [points3d] = generateWorldPoints()
     % GENERATEWORLDPOINTS   :   Generate world points for the cube corners
     %
@@ -47,7 +84,8 @@ function [points3d] = generateWorldPoints()
     %        points3d       -   The 3D world points (3xM)
 
     points3d = [ [0,0,50]; [0,0,0]; [315,0,0]; [315,0,50]; [360,0,50]; ...
-        [360,0,0]; [510,180,0]; [510,180,50] ];
+        [360,0,0]; [510,180,0]; [510,180,50]; [510,230,50]; [510,230,0];...
+        [560,230,0]; [560,230,50]; [560,180,50]];
     points3d = points3d';
 
 end
@@ -113,11 +151,15 @@ function imgPoints = get2dUserInput(inputImg)
     % Returns:
     %      imgPoints -  An array of 2xM image points
 
+    calibPoints = 13;
     f1 = figure;
     B = imshow(inputImg);
     imgPoints = [];
     row = []; column = [];
     while 0<1
+        pointsSelected = size(row,1);
+        titleTxt = sprintf("%d Corners selected", pointsSelected);
+        title(titleTxt);
         [x,y,b] = ginput(1);
         if isempty(b)
             break;
@@ -133,7 +175,7 @@ function imgPoints = get2dUserInput(inputImg)
             row=[row;round(x)];
             column=[column;round(y)];
         end
-        if(size(row,1) == 8)
+        if(size(row,1) == calibPoints)
             break
         end
     end
