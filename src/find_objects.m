@@ -174,6 +174,10 @@ function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)
 end
 
 function robot = locate_robot_arrow(img)
+    img = histeq(img);
+    %figure;
+    %imshow(img);
+
     img = rgb2hsv(img);
 
     hmin = 0.000; 
@@ -183,9 +187,13 @@ function robot = locate_robot_arrow(img)
     vmin = 0.880;
     vmax = 1.000;
 
-    filter = (img(:, :, 1) >= hmin) & (img(:, :, 1) <= hmax) & ...
-      (img(:, :, 2) >= smin) & (img(:, :, 2) <= smax) & ...
-      (img(:, :, 3) >= vmin) & (img(:, :, 3) <= vmax);
+    %filter = (img(:, :, 1) >= hmin) & (img(:, :, 1) <= hmax) & ...
+    %  (img(:, :, 2) >= smin) & (img(:, :, 2) <= smax) & ...
+    %  (img(:, :, 3) >= vmin) & (img(:, :, 3) <= vmax);
+
+    filter = (img(:, :, 1) >= prctile(10)) & (img(:, :, 1) <= prctile(90)) & ...
+      (img(:, :, 2) >= prctile(10)) & (img(:, :, 2)<= prctile(90)) & ...
+      (img(:, :, 3) >= prctile(10)) & (img(:, :, 3) <= prctile(90));
 
     colored_area = bwareaopen(filter, 10);
     colored_area = imfill(colored_area, "holes");
@@ -263,12 +271,12 @@ function dir = get_dir(arrow, img)
     anchor = [mean(arrow(1,:));mean(arrow(2,:))];
 
     dir=0;
-    %plot(max_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    %plot(min_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    %plot(max_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    %plot(min_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    %plot(box_mid(1), box_mid(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
-    %plot(anchor(1), anchor(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "green");
+    plot(max_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(min_x, max_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(max_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(min_x, min_y, "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(box_mid(1), box_mid(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "yellow");
+    plot(anchor(1), anchor(2), "diamond", 'MarkerSize', 3, 'markerFaceColor', "green");
     
    % vecs = zeros(9, 9, 2);
     arrow = [arrow,anchor];
@@ -348,5 +356,4 @@ function dir = get_dir(arrow, img)
         end   
     end
 
-    %if (anchor < box_mid)
 end

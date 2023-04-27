@@ -10,17 +10,17 @@ close all; clear; clc;
 % TBD
 
 % Perform camera calibration
-calibImg = imread("..\test_images\calibration\img2.png");
-projMatrix = calibrate(calibImg);
-%projMatrix = [1.3311   -0.6213   -0.7263  821.6881;
-%    0.0361    0.4096   -1.2731  518.8264;
-%    0.0001   -0.0008   -0.0009    1.0000]
+calibImg = imread("..\test_images\calibration\img3.png");
+%projMatrix = calibrate(calibImg);
+projMatrix = [    1.3623   -0.2806   -0.6778  892.8117;
+    0.0569    0.4833   -1.2259  470.5291;
+    0.0002   -0.0006   -0.0008    1.0000]
 
 % save projMatrix projMatrix;
 
 %load projMatrix.mat
 
-img = imread("..\test_images\new_robot_cover\img5.png");
+img = imread("..\test_images\new_robot_cover\img10.png");
 
 blocks = ["green","blue","red"];
 x=move_block(blocks,img,projMatrix);

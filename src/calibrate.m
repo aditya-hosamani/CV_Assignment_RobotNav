@@ -34,8 +34,8 @@ function [projM] = calibrate(inputImg)
     n = size(points3d, 2);
     points3d = [points3d; ones(1, n)];
     
-    residuals = @(P) reshape(pflat(P * points3d) - points2d, [], 1);
-
+    residuals = @(P) sqrt(sum((pflat(P * points3d) - points2d).^2, 1));
+    
     % Use lsqnonlin to optimize the projection matrix
     options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt');
     projM = lsqnonlin(residuals, projM, [], [], options);
@@ -50,7 +50,7 @@ function [projM] = calibrate(inputImg)
     plot(projPoints2d(1,:), projPoints2d(2,:), 'bo', 'MarkerSize', 10);
 
     % Display the reprojection error
-    reprojError = norm(points2d-projPoints2d, 2);
+    reprojError = vecnorm(points2d-projPoints2d, 2, 1);
     fprintf("Reprojection Error: %f\n", reprojError);
     
 end
