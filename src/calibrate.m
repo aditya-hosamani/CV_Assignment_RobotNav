@@ -34,11 +34,17 @@ function [projM] = calibrate(inputImg)
     n = size(points3d, 2);
     points3d = [points3d; ones(1, n)];
     
-    residuals = @(P) sqrt(sum((pflat(P * points3d) - points2d).^2, 1));
+    display(projM);
+    display(points2d);
+    x = [projM(:); points2d(:)];
+    residuals = @(x) optimize_calibration(x, points3d);
     
     % Use lsqnonlin to optimize the projection matrix
     options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt');
-    projM = lsqnonlin(residuals, projM, [], [], options);
+    x = lsqnonlin(residuals, x, [], [], options);
+    projM = reshape(x(1:12), [3 4]);
+    points2d = reshape(x(13:end), [2 13]);
+    
 
     % Verify projection matrix by displaying the projected points
     points3d = points3d(1:3,:);
@@ -55,6 +61,11 @@ function [projM] = calibrate(inputImg)
     
 end
 
+function residuals = optimize_calibration(x, points3d)
+     projMatrix = reshape(x(1:12), [3 4]);
+     points2d = reshape(x(13:end), [2 13]);
+     residuals = sqrt(sum((pflat(projMatrix * points3d) - points2d).^2, 1));
+ end
 
 function X_eucl = pflat(X_homog)
 % Convert homogeneous coordinates to Euclidean coordinates

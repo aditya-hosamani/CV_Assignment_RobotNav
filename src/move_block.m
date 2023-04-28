@@ -41,8 +41,8 @@ function res = move_block(blocks, img, projMatrix)
 
     cyan = coord_set_2d(:,1);
     mag = coord_set_2d(:,2);
-    cube = coord_set_2d(:,3);
-    target = coord_set_2d(:,6);
+    cube = coord_set_2d(:,5);
+    target = coord_set_2d(:,8);
 
 
     %Get Ange of robot
@@ -58,7 +58,9 @@ function res = move_block(blocks, img, projMatrix)
     display(param_cube)
     display(param_target)
     
-    instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2));let_go();go(-100)];
+    gripperlength = 120 - 25;
+
+    instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2)-gripperlength);let_go();go(-200)];
     res = join(instructions, "; ")
 end
 

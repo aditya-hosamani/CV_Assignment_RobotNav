@@ -129,14 +129,21 @@ end
 
 function [cyan_centroid, magenta_centroid] = locate_robot(img)
     % Locate cyan in RGB color space
-    rmin_c = 0;  
-    rmax_c = 100;
-    gmin_c = 50;
-    gmax_c = 150;
-    bmin_c = 100;
-    bmax_c = 255;
+    %rmin_c = 0;  
+    %rmax_c = 50;
+    %gmin_c = 75;
+    %gmax_c = 150;
+    %bmin_c = 75;
+    %bmax_c = 230;
+    hmin_c = 0.460;
+    hmax_c = 0.562;
+    smin_c = 0.217;
+    smax_c = 1.0;
+    vmin_c = 0.3;  % Might have to make this smaller
+    vmax_c = 1.0;
 
-    cyan_centroid = locate_dot(img, rmin_c, rmax_c, gmin_c, gmax_c, bmin_c, bmax_c);
+    imghsv = rgb2hsv(img);
+    cyan_centroid = locate_dot(imghsv, hmin_c, hmax_c, smin_c, smax_c, vmin_c, vmax_c);
     cyan_centroid = [cyan_centroid 1];
 
     % Locate magenta
@@ -156,7 +163,7 @@ function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)
       (img(:, :, 2) >= gmin) & (img(:, :, 2) <= gmax) & ...
       (img(:, :, 3) >= bmin) & (img(:, :, 3) <= bmax);
 
-    colored_area = bwareaopen(filter, 50);
+    colored_area = bwareaopen(filter, 70);
     colored_area = imfill(colored_area, "holes");
 
     props = regionprops('table', colored_area, 'Centroid', 'Circularity', ...
@@ -178,24 +185,34 @@ function robot = locate_robot_arrow(img)
     %figure;
     %imshow(img);
 
-    img = rgb2hsv(img);
+    %img = rgb2hsv(img);
 
-    hmin = 0.000; 
-    hmax = 1.000;
-    smin = 0.000;
-    smax = 0.071;
-    vmin = 0.880;
-    vmax = 1.000;
+    %hmin = 0.000; 
+    %hmax = 1.000;
+    %smin = 0.000;
+    %smax = 0.071;
+    %vmin = 0.880;
+    %vmax = 1.000;
 
     %filter = (img(:, :, 1) >= hmin) & (img(:, :, 1) <= hmax) & ...
     %  (img(:, :, 2) >= smin) & (img(:, :, 2) <= smax) & ...
     %  (img(:, :, 3) >= vmin) & (img(:, :, 3) <= vmax);
 
-    filter = (img(:, :, 1) >= prctile(10)) & (img(:, :, 1) <= prctile(90)) & ...
-      (img(:, :, 2) >= prctile(10)) & (img(:, :, 2)<= prctile(90)) & ...
-      (img(:, :, 3) >= prctile(10)) & (img(:, :, 3) <= prctile(90));
+    pmin = 99;
+    pmax = 100;
 
-    colored_area = bwareaopen(filter, 10);
+    rmin = prctile(img(:, :, 1), pmin); 
+    rmax = prctile(img(:, :, 1), pmax);
+    gmin = prctile(img(:, :, 2), pmin);
+    gmax = prctile(img(:, :, 2), pmax);
+    bmin = prctile(img(:, :, 3), pmin);
+    bmax = prctile(img(:, :, 3), pmax);
+
+    filter = (img(:, :, 1) >= rmin) & (img(:, :, 1) <= rmax) & ...
+      (img(:, :, 2) >= gmin) & (img(:, :, 2) <= gmax) & ...
+      (img(:, :, 3) >= bmin) & (img(:, :, 3) <= bmax);
+
+    colored_area = bwareaopen(filter, 50);
     colored_area = imfill(colored_area, "holes");
 
      labeled_img = bwlabel(colored_area);
@@ -220,7 +237,7 @@ function robot = locate_robot_arrow(img)
             indices = [indices, i];
         end
     end
-    display(arrow)
+    display(arrow);
     arrow = filter_arrow(arrow, labeled_img, indices);
     for i = 1:8
         %plot(arrow(1, i), arrow(2, i), "diamond", 'MarkerSize', 3, 'markerFaceColor', "red");
