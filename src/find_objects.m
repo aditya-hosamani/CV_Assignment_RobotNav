@@ -129,21 +129,14 @@ end
 
 function [cyan_centroid, magenta_centroid] = locate_robot(img)
     % Locate cyan in RGB color space
-    %rmin_c = 0;  
-    %rmax_c = 50;
-    %gmin_c = 75;
-    %gmax_c = 150;
-    %bmin_c = 75;
-    %bmax_c = 230;
-    hmin_c = 0.460;
-    hmax_c = 0.562;
-    smin_c = 0.217;
-    smax_c = 1.0;
-    vmin_c = 0.3;  % Might have to make this smaller
-    vmax_c = 1.0;
+    rmin_c = 0;  
+    rmax_c = 100;
+    gmin_c = 50;
+    gmax_c = 150;
+    bmin_c = 100;
+    bmax_c = 255;
 
-    imghsv = rgb2hsv(img);
-    cyan_centroid = locate_dot(imghsv, hmin_c, hmax_c, smin_c, smax_c, vmin_c, vmax_c);
+    cyan_centroid = locate_dot(img, rmin_c, rmax_c, gmin_c, gmax_c, bmin_c, bmax_c);
     cyan_centroid = [cyan_centroid 1];
 
     % Locate magenta
@@ -163,7 +156,7 @@ function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)
       (img(:, :, 2) >= gmin) & (img(:, :, 2) <= gmax) & ...
       (img(:, :, 3) >= bmin) & (img(:, :, 3) <= bmax);
 
-    colored_area = bwareaopen(filter, 70);
+    colored_area = bwareaopen(filter, 50);
     colored_area = imfill(colored_area, "holes");
 
     props = regionprops('table', colored_area, 'Centroid', 'Circularity', ...
