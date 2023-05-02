@@ -1,4 +1,4 @@
-function res = move_block(blocks, img, projMatrix)
+function res = move_block(cube_clr, img, projMatrix)
 % MOVE_BLOCK Returns the commands to move the specified blocks to their target position.
 %
 %    Inputs:
@@ -21,7 +21,7 @@ function res = move_block(blocks, img, projMatrix)
     % transpose(rtarget) transpose(gtarget) transpose(btarget)];
 
 %   coord_set = [robpos;block;target]
-    cube_clr = blocks(1);
+    %cube_clr = blocks(1);
     coord_set=find_objects(img,cube_clr);
     coord_set_2d = zeros(4,size(coord_set,2));
     Z_robot = 75;
@@ -41,9 +41,23 @@ function res = move_block(blocks, img, projMatrix)
 
     cyan = coord_set_2d(:,1);
     mag = coord_set_2d(:,2);
-    cube = coord_set_2d(:,5);
-    target = coord_set_2d(:,8);
+   
+   cube = [0; 0];
+   if cube_clr == "red"
+        disp("Red")
+        cube    = coord_set_2d(:,3);
+        target  = coord_set_2d(:,6);
+    
+    elseif cube_clr == "green"
+        disp("Green")
+        cube    = coord_set_2d(:,4);
+        target  = coord_set_2d(:,7);
 
+    elseif cube_clr == "blue"
+        disp("Blue")
+        cube    = coord_set_2d(:,5);
+        target  = coord_set_2d(:,8);
+   end
 
     %Get Ange of robot
     param_bot = val_calc(cyan,mag,0);

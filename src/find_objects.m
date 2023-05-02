@@ -1,9 +1,9 @@
-clear all; close all; clc;
+%clear all; close all; clc;
  
-img = imread("..\test_images\new_robot_cover\img16.png");
-x = find_obj(img, "green");
+%img = imread("..\test_images\new_robot_cover\img16.png");
+%x = find_obj(img, "green");
 
-function coords = find_obj(img, cube_color)
+function coords = find_objects(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %

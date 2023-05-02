@@ -2,9 +2,17 @@ function res = move_block_pathfinding(cube_clr, img, projMatrix)
 % MOVE_BLOCK Returns the commands to move the specified blocks to their target position.
     coord_set=find_objects(img,cube_clr);
     coord_set_2d = zeros(4,size(coord_set,2));
-    Z=25;
-    for i = 1:size(coord_set,2)
-        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z);
+    Z_robot = 75;
+    Z_cube=25;
+
+    display(projMatrix)
+    for i = 1:2
+        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z_robot);
+    end
+    
+    for i = 3:size(coord_set,2)
+        coord_set_2d(:,i) = trans_cord(double(coord_set(:,i)),projMatrix,Z_cube);
+        %coord_set(:,i) = ()
     end
 
     display(coord_set)
@@ -13,28 +21,33 @@ function res = move_block_pathfinding(cube_clr, img, projMatrix)
     mag = coord_set(:,2);
 
     cube = [0; 0];
-    %Cube Selection
-    if cube_clr == "red"
-        disp("Red")
-        cube    = coord_set(:,3);
-        target  = coord_set(:,6);
-        obs1    = coord_set(:,4);
-        obs2    = coord_set(:,5);
-    
-    elseif cube_clr == "green"
-        disp("Green")
-        cube    = coord_set(:,4);
-        target  = coord_set(:,7);
-        obs1    = coord_set(:,3);
-        obs2    = coord_set(:,5);
 
-    elseif cube_clr == "blue"
-        disp("Blue")
-        cube    = coord_set(:,5);
-        target  = coord_set(:,8);
-        obs1    = coord_set(:,3);
-        obs2    = coord_set(:,4);
-    end
+    cube    = coord_set_2d(:,5);
+    target  = coord_set_2d(:,8);
+    obs1    = coord_set_2d(:,3);
+    obs2    = coord_set_2d(:,4);
+    %Cube Selection
+%     if cube_clr == "red"
+%         disp("Red")
+%         cube    = coord_set(:,3);
+%         target  = coord_set(:,6);
+%         obs1    = coord_set(:,4);
+%         obs2    = coord_set(:,5);
+%     
+%     elseif cube_clr == "green"
+%         disp("Green")
+%         cube    = coord_set(:,4);
+%         target  = coord_set(:,7);
+%         obs1    = coord_set(:,3);
+%         obs2    = coord_set(:,5);
+% 
+%     elseif cube_clr == "blue"
+%         disp("Blue")
+%         cube    = coord_set(:,5);
+%         target  = coord_set(:,8);
+%         obs1    = coord_set(:,3);
+%         obs2    = coord_set(:,4);
+%     end
     
     instructions = [];
 

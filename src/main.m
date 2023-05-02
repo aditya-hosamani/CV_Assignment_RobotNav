@@ -10,20 +10,20 @@ close all; clear; clc;
 % TBD
 
 % Perform camera calibration
-calibImg = imread("..\test_images\calibration\img4.png");
+calibImg = imread("..\test_images\calibration\img5.png");
 %projMatrix = calibrate(calibImg);
-projMatrix = [1.48699200398622  -0.485026261014436   -0.634347291116932  887.059327916758;
-    0.0684411527796349    0.459803451092746   -1.26108213837899  550.944988486190;
-    0.000249883270920853   -0.000756377272536275   -0.000795545640202916    1.0000]
+projMatrix = [1.27219959458635  -0.200475561994178   -0.613685301466242  791.478297587854;
+    0.0284774305272106    0.505620884430595   -1.20200243105692  457.175036879880;
+    0.000155640939249155   -0.000501496855945291   -0.000750300514730955    1.0000]
 
 % save projMatrix projMatrix;
 
 %load projMatrix.mat
 
-img = imread("..\test_images\new_robot_cover\img21.png");
+img = imread("..\test_images\new_robot_cover\img14.png");
 
 blocks = ["green","blue","red"];
-x=move_block("red",img,projMatrix);
+x=move_block_pathfinding("blue",img,projMatrix);
 
 % Object detection
 
