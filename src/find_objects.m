@@ -1,9 +1,9 @@
-%clear all; close all; clc;
+clear all; close all; clc;
  
-%img = imread("..\test_images\new_robot_cover\far3.png");
-%x = find_obj(img, "green");
+img = imread("..\test_images\new_robot_cover\img16.png");
+x = find_obj(img, "green");
 
-function coords = find_object(img, cube_color)
+function coords = find_obj(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %
@@ -32,7 +32,7 @@ end
 function [rcube, rtarget] = locate_red(img)
     % Locate red in RGB color space
     % Specify minimum and maximum values for color channels
-    rmin = 65;  
+    rmin = 55;
     rmax = 255;
     gmin = 0;
     gmax = 50;
@@ -101,8 +101,6 @@ function [cube_centroid, target_centroid] = locate_cube_and_target(img, rmin, rm
       (img(:, :, 2) >= gmin) & (img(:, :, 2) <= gmax) & ...
       (img(:, :, 3) >= bmin) & (img(:, :, 3) <= bmax);
 
-    %colored_area = filter      % This line is for testing
-
     % Remove small areas from the binary image and fill holes in areas
     colored_area = bwareaopen(filter, 300);
     colored_area = imfill(colored_area, "holes");
@@ -125,7 +123,7 @@ function [cube_centroid, target_centroid] = locate_cube_and_target(img, rmin, rm
         target_centroid = cube_centroid;
     end
 
-    % Plotting for testing, to be deleted later
+    % Plotting for testing
     figure;
     imshow(colored_area);
     hold on;
@@ -148,7 +146,7 @@ function [cyan_centroid, magenta_centroid] = locate_robot(img)
     % Locate cyan in HSV color space
     imghsv = rgb2hsv(img);
     hmin_c = 0.5;
-    hmax_c = 0.63;
+    hmax_c = 0.61;
     smin_c = 0.217;
     smax_c = 1.0;
     vmin_c = 0.4;
