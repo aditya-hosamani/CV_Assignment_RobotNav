@@ -1,9 +1,9 @@
-%clear all; close all; clc;
+clear all; close all; clc;
  
-%img = imread("..\test_images\new_robot_cover\far3.png");
-%x = find_obj(img, "green");
+img = imread("..\test_images\new_robot_cover\img15.png");
+x = find_obj(img, "green");
 
-function coords = find_object(img, cube_color)
+function coords = find_obj(img, cube_color)
 % FIND_OBJ Find the location of the cubes and targets,
 % and the pose of the robot using color tresholding
 %
@@ -116,13 +116,13 @@ function [cube_centroid, target_centroid] = locate_cube_and_target(img, rmin, rm
     props([cube_idx], :) = [];
 
     
-    if (height(props) >= 1)
+    if (height(props) > 1)
         target_visible = 1;
         max_val = max(props.Circularity);
         target_idx = find(props.Circularity == max_val);
         target_centroid = [props.Centroid(target_idx, :) 1];
     else
-        target_centroid = cube_centroid;
+        target_centroid = ;
     end
 
     % Plotting for testing, to be deleted later
@@ -161,7 +161,7 @@ function [cyan_centroid, magenta_centroid] = locate_robot(img)
     rmin_m = 70;  
     rmax_m = 255;
     gmin_m = 0;
-    gmax_m = 55;
+    gmax_m = 70;
     bmin_m = 60;
     bmax_m = 255;
 
@@ -174,7 +174,7 @@ function dot_centroid = locate_dot(img, rmin, rmax, gmin, gmax, bmin, bmax)
       (img(:, :, 2) >= gmin) & (img(:, :, 2) <= gmax) & ...
       (img(:, :, 3) >= bmin) & (img(:, :, 3) <= bmax);
 
-    colored_area = bwareaopen(filter, 30);
+    colored_area = bwareaopen(filter, 50);
     colored_area = imfill(colored_area, "holes");
 
     props = regionprops('table', colored_area, 'Centroid', 'Circularity', ...
