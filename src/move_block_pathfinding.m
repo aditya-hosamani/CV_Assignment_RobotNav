@@ -61,7 +61,7 @@ function res = move_block_pathfinding(cube_clr, img, projMatrix)
     offset_angle = offset_angle + param_cube(1)
     
     %Parsing instructions
-    %instructions = [instructions,turn(param_cube(1)),go(param_cube(2)),grab()];
+    instructions = [instructions,turn(param_cube(1)),go(param_cube(2)),grab()];
     
 
     %Object detection stage 1
@@ -82,8 +82,8 @@ function res = move_block_pathfinding(cube_clr, img, projMatrix)
     
     gripperlength = 120;
     %Parsing instructions
-    %instructions = [instructions,turn(param_target(1)),go(param_target(2)),let_go();go(-100)];
-    instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2)-gripperlength);let_go();go(-100)];
+    instructions = [instructions,turn(param_target(1)),go(param_target(2)),let_go(),go(-100)];
+    %instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2)-gripperlength);let_go();go(-100)];
     res = join(instructions, "; ")
 end
 
