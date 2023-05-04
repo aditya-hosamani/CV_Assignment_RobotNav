@@ -20,10 +20,10 @@ projMatrix = [1.27219959458635  -0.200475561994178   -0.613685301466242  791.478
 
 %load projMatrix.mat
 
-img = imread("..\test_images\new_robot_cover\img14.png");
+img = imread("..\test_images\new_robot_cover\img28.png");
 
 blocks = ["green","blue","red"];
-x=move_block_pathfinding("blue",img,projMatrix);
+x=move_block("red",img,projMatrix);
 
 % Object detection
 

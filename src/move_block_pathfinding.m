@@ -17,37 +17,37 @@ function res = move_block_pathfinding(cube_clr, img, projMatrix)
 
     display(coord_set)
     
-    cyan = coord_set(:,1);
-    mag = coord_set(:,2);
+    cyan = coord_set_2d(:,1);
+    mag = coord_set_2d(:,2);
 
     cube = [0; 0];
 
-    cube    = coord_set_2d(:,5);
-    target  = coord_set_2d(:,8);
-    obs1    = coord_set_2d(:,3);
-    obs2    = coord_set_2d(:,4);
+    %cube    = coord_set_2d(:,5);
+    %target  = coord_set_2d(:,8);
+    %obs1    = coord_set_2d(:,3);
+    %obs2    = coord_set_2d(:,4);
     %Cube Selection
-%     if cube_clr == "red"
-%         disp("Red")
-%         cube    = coord_set(:,3);
-%         target  = coord_set(:,6);
-%         obs1    = coord_set(:,4);
-%         obs2    = coord_set(:,5);
-%     
-%     elseif cube_clr == "green"
-%         disp("Green")
-%         cube    = coord_set(:,4);
-%         target  = coord_set(:,7);
-%         obs1    = coord_set(:,3);
-%         obs2    = coord_set(:,5);
-% 
-%     elseif cube_clr == "blue"
-%         disp("Blue")
-%         cube    = coord_set(:,5);
-%         target  = coord_set(:,8);
-%         obs1    = coord_set(:,3);
-%         obs2    = coord_set(:,4);
-%     end
+    if cube_clr == "red"
+        disp("Red")
+        cube    = coord_set_2d(:,3);
+        target  = coord_set_2d(:,6);
+        obs1    = coord_set_2d(:,4);
+        obs2    = coord_set_2d(:,5);
+    
+    elseif cube_clr == "green"
+        disp("Green")
+        cube    = coord_set_2d(:,4);
+        target  = coord_set_2d(:,7);
+        obs1    = coord_set_2d(:,3);
+        obs2    = coord_set_2d(:,5);
+
+    elseif cube_clr == "blue"
+        disp("Blue")
+        cube    = coord_set_2d(:,5);
+        target  = coord_set_2d(:,8);
+        obs1    = coord_set_2d(:,3);
+        obs2    = coord_set_2d(:,4);
+    end
     
     instructions = [];
 
@@ -93,9 +93,9 @@ function res = move_block_pathfinding(cube_clr, img, projMatrix)
         param_target = val_calc(target,cube,offset_angle);
     end
     
-    gripperlength = 120;
+    gripperlength = 120 - 25;
     %Parsing instructions
-    instructions = [instructions,turn(param_target(1)),go(param_target(2)),let_go(),go(-100)];
+    instructions = [instructions,turn(param_target(1)),go(param_target(2)-gripperlength),let_go(),go(-200)];
     %instructions = [turn(param_cube(1));go(param_cube(2));grab();turn(param_target(1));go(param_target(2)-gripperlength);let_go();go(-100)];
     res = join(instructions, "; ")
 end
