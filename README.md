@@ -12,4 +12,4 @@ We have 2 files for deciding and giving instructions to the robot. move_block.m 
 
 Below is an image of the scene.
 
-![The assignment problem](./test_images/new_robot_cover/img1.png)
+![The assignment problem](./test_images/demo.gif)
